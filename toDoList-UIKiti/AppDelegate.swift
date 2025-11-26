@@ -7,18 +7,28 @@
 
 import UIKit
 
-class AppDelegate: NSObject, UIApplicationDelegate {
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
+    ) -> Bool {
 
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        //window.rootViewController = TaskListViewController()
-        window.makeKeyAndVisible()
-        self.window = window
+        print("AppDelegate didFinishLaunching")
+
+        window = UIWindow(frame: UIScreen.main.bounds)
+        print("Window created: \(window != nil)")
+
+        let taskListVC = TaskListViewController()
+        let navController = UINavigationController(rootViewController: taskListVC)
+
+        window?.rootViewController = navController
+        window?.makeKeyAndVisible()
 
         return true
     }
+
 }
