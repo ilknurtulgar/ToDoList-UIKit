@@ -8,6 +8,7 @@
 import Foundation
 
 class Task: Codable {
+    
     var title: String
     var isDone: Bool
     
@@ -16,3 +17,4 @@ class Task: Codable {
         self.isDone = isDone
     }
 }
+

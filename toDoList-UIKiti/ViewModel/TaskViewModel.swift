@@ -20,10 +20,10 @@ class TaskViewModel {
         saveTasks()
     }
     
-    func toggleTask(at index: Int){
-        tasks[index].isDone.toggle()
-        saveTasks()
-    }
+    func toggleTask(task: Task){
+          task.isDone.toggle()
+          saveTasks()
+      }
     
     func deleteTask(at index: Int){
         guard tasks.indices.contains(index) else { return }
@@ -32,11 +32,12 @@ class TaskViewModel {
     }
     
     private func saveTasks(){
-        // swift code to json data
-        if let encoded = try? JSONEncoder().encode(tasks){
-            UserDefaults.standard.set(encoded, forKey: "tasks")
-        }
-    }
+        if let encoded = try? JSONEncoder().encode(tasks) {
+                 UserDefaults.standard.set(encoded, forKey: "tasks")
+                 UserDefaults.standard.synchronize()
+             }
+      }
+
     
     private func loadTasks(){
         //json data to swift code

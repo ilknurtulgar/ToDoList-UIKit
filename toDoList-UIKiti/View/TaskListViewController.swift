@@ -14,16 +14,17 @@ class TaskListViewController: UIViewController,UITableViewDataSource, UITableVie
     private let textField = UITextField()
     private let addButton = UIButton(type: .system)
     
-    
-    
     override func viewDidLoad() {
-        print("TaskListViewController loaded")
         super.viewDidLoad()
         view.backgroundColor = .white
         title = "ToDo List"
-       
+        
         setupTextFieldAndButton()
         setupTableView()
+        tableView.register(TaskCell.self, forCellReuseIdentifier: "TaskCell")
+        
+        tableView.reloadData()
+
     }
     
     private func setupTextFieldAndButton() {
@@ -62,7 +63,6 @@ class TaskListViewController: UIViewController,UITableViewDataSource, UITableVie
         tableView.dataSource = self
         tableView.delegate = self
         
-        tableView.register(UITableViewCell.self,forCellReuseIdentifier: "cell")
         tableView.backgroundColor = .systemBackground
         tableView.layer.cornerRadius = 10
         view.addSubview(tableView)
@@ -74,7 +74,6 @@ class TaskListViewController: UIViewController,UITableViewDataSource, UITableVie
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor,constant: -20),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor,constant: -20)
         ])
-        
     }
     
     @objc private func addTask() {
@@ -89,20 +88,23 @@ class TaskListViewController: UIViewController,UITableViewDataSource, UITableVie
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell",for: indexPath)
-        let task = viewModel.tasks[indexPath.row]
-        cell.textLabel?.text = task.title
-        cell.accessoryType = task.isDone ? .checkmark : .none
-        cell.backgroundColor = .secondarySystemBackground
-        cell.textLabel?.textColor = .label
-        cell.layer.cornerRadius = 10
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        viewModel.toggleTask(at: indexPath.row)
-        tableView.reloadRows(at: [indexPath], with: .automatic)
-    }
+           let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! TaskCell
+           let task = viewModel.tasks[indexPath.row]
+
+           cell.taskLabel.text = task.title
+           cell.icon.image = UIImage(systemName: task.isDone ? "circle.inset.filled" : "circle")
+           cell.icon.tintColor = .systemPink
+
+           cell.toggleHandler = { [weak self] in
+               guard let self = self else { return }
+               let task = self.viewModel.tasks[indexPath.row]
+               self.viewModel.toggleTask(task: task)
+               tableView.reloadRows(at: [indexPath], with: .automatic)
+           }
+
+           return cell
+       }
+
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath){
         if editingStyle == .delete{
@@ -110,7 +112,7 @@ class TaskListViewController: UIViewController,UITableViewDataSource, UITableVie
             tableView.deleteRows(at: [indexPath], with:.automatic)
         }
     }
-
+    
 }
 
 extension UITextField{
